@@ -24,12 +24,12 @@ libraryDependencies ++= Seq(
   specs2 % Test,
   filters,
 	"org.specs2" %% "specs2-matcher-extra" % "3.8.5" % Test,
-  "org.reactivemongo" %% "play2-reactivemongo" % reactiveMongoVer,
+  "org.reactivemongo" %% "play2-reactivemongo" % reactiveMongoVer
 
 
 
   //angular2 dependencies
-  "org.webjars.npm" % "angular__common" % ngVersion,
+  /*"org.webjars.npm" % "angular__common" % ngVersion,
   "org.webjars.npm" % "angular__compiler" % ngVersion,
   "org.webjars.npm" % "angular__core" % ngVersion,
   "org.webjars.npm" % "angular__forms" % ngVersion,
@@ -58,16 +58,16 @@ libraryDependencies ++= Seq(
   "org.webjars.npm" % "codelyzer" % "0.0.28",
   "org.webjars.npm" % "types__jasmine" % "2.2.26-alpha" % "test"
   //test
-  //  "org.webjars.npm" % "jasmine-core" % "2.4.1"
+  //  "org.webjars.npm" % "jasmine-core" % "2.4.1"*/
 
 )
 
 
-dependencyOverrides += "org.webjars.npm" % "minimatch" % "3.0.0"
+//dependencyOverrides += "org.webjars.npm" % "minimatch" % "3.0.0"
 
 // the typescript typing information is by convention in the typings directory
 // It provides ES6 implementations. This is required when compiling to ES5.
-typingsFile := Some(baseDirectory.value / "typings" / "index.d.ts")
+/*typingsFile := Some(baseDirectory.value / "typings" / "index.d.ts")
 
 // use the webjars npm directory (target/web/node_modules ) for resolution of module imports of angular2/core etc
 resolveFromWebjarsNodeModulesDir := true
@@ -77,7 +77,7 @@ resolveFromWebjarsNodeModulesDir := true
   tslintEslintRulesDir.value,
   ng2LintRulesDir.value
 ))
-
+*/
 routesGenerator := InjectedRoutesGenerator
 
 

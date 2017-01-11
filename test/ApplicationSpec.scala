@@ -19,7 +19,7 @@ import play.api.libs.json.{ Json, JsNull }
 class ApplicationSpec extends PlaySpecification with JsonMatchers {
 
   lazy val app = new GuiceApplicationBuilder().build
-
+     val test:String="test"
   val basicHeaders = Headers(
     HEADER_CONTENT_TYPE -> "application/json",
     HEADER_ACCEPT_LANGUAGE -> "en",

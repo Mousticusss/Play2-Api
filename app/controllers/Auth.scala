@@ -24,14 +24,14 @@ import play.api.Logger
 import reactivemongo.bson._
 import services.UserServices
 
-class Auth @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: ReactiveMongoApi, system: ActorSystem) extends api.ApiController {
+class Auth @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: ReactiveMongoApi, system: ActorSystem, userService: UserServices) extends api.ApiController {
 
   implicit val loginInfoReads: Reads[Tuple2[String, String]] = (
     (__ \ "email").read[String](Reads.email) and
       (__ \ "password").read[String] tupled
   )
 
-  def userService = new UserServices(reactiveMongoApi)
+  //def userService = new UserServices(reactiveMongoApi)
 
   def signIn = ApiActionWithBody { implicit request =>
 
@@ -129,9 +129,6 @@ class Auth @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: Reacti
             Logger.debug(Some.toString)
             errorCustom("api.error.signup.email.exists") // nothing special, delegate to our original showNotification function
 
-          case Some(_) =>
-            Logger.debug(Some.toString)
-            errorCustom("api.error.signup.email.exists")
         }
     }
   }

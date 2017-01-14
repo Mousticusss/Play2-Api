@@ -27,10 +27,7 @@ import services.{ MessageServices, UserServices }
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.{ Failure, Success }
 
-class Messages @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: ReactiveMongoApi) extends api.ApiController {
-
-  def messageService = new MessageServices(reactiveMongoApi)
-  def userService = new UserServices(reactiveMongoApi)
+class Messages @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: ReactiveMongoApi, val messageService: MessageServices, userService: UserServices) extends api.ApiController {
 
   def delete(id: Long) = SecuredApiAction { implicit request =>
     messageService.remove(Json.obj("_id" -> id)).flatMap { _ =>

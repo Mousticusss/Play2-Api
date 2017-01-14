@@ -1,4 +1,6 @@
 package services
+import javax.inject.Inject
+
 import reactivemongo.play.json._
 import models.User
 import org.joda.time.DateTime
@@ -25,7 +27,7 @@ trait UserService extends CRUDService[User] {
 
 }
 
-class UserServices(reactiveMongoApi: ReactiveMongoApi) extends MongoCRUDService[User](User.userFormat: Format[User]) with UserService {
+class UserServices @Inject() (reactiveMongoApi: ReactiveMongoApi) extends MongoCRUDService[User](User.userFormat: Format[User]) with UserService {
 
   def collection(implicit ec: ExecutionContext) = reactiveMongoApi.database.map(_.collection[JSONCollection]("user"))
 

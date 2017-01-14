@@ -1,5 +1,7 @@
 package services
 
+import javax.inject.Inject
+
 import models.{ Message, User }
 import play.api.libs.json.{ Format, JsObject, Json }
 import play.modules.reactivemongo.ReactiveMongoApi
@@ -19,7 +21,7 @@ trait MessageService extends CRUDService[Message] {
 
 }
 
-class MessageServices(reactiveMongoApi: ReactiveMongoApi) extends MongoCRUDService[Message](Message.messageFormat: Format[Message]) with MessageService {
+class MessageServices @Inject() (reactiveMongoApi: ReactiveMongoApi) extends MongoCRUDService[Message](Message.messageFormat: Format[Message]) with MessageService {
 
   def collection(implicit ec: ExecutionContext) = reactiveMongoApi.database.map(_.collection[JSONCollection]("user"))
 

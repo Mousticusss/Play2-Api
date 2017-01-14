@@ -71,24 +71,6 @@ class Users @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: React
     })
 
   }
-*/ def userCollection = db.collection[JSONCollection]("user")
-
-  def findOlder1(email: String): Future[Option[BSONDocument]] = {
-    // { "age": { "$gt": 27 } }
-    val query = BSONDocument("age" -> BSONDocument("$gt" -> 27))
-
-    // MongoDB .findOne
-    userCollection.find(query).one[BSONDocument]
-  }
-
-  def findOlder2(collection: BSONCollection) = {
-    val query = BSONDocument("age" -> BSONDocument("$gt" -> 27))
-
-    // only fetch the name field for the result documents
-    val projection = BSONDocument("name" -> 1)
-
-    collection.find(query, projection).cursor[BSONDocument]().
-      collect[List](25) // get up to 25 documents
-  }
+*/
 }
 

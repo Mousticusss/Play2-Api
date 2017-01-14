@@ -10,7 +10,7 @@ import reactivemongo.play.json.collection.JSONCollection
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.joda.time.DateTime
 import play.api.Logger
-import play.modules.reactivemongo.json.BSONFormats._
+import reactivemongo.play.json.BSONFormats._
 import reactivemongo.bson.{ BSONDateTime, BSONObjectID }
 import play.api.libs.functional.syntax._
 case class User(

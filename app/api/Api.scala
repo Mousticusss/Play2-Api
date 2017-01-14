@@ -40,7 +40,7 @@ object Api {
   //////////////////////////////////////////////////////////////////////
   // Date and joda.DateTime utils
 
-  private final val longDateTimeFormatter = DateTimeFormat.forPattern("E, dd MMM yyyy HH:mm:ss 'GMT'").withLocale(Locale.ENGLISH).withZoneUTC()
+  private final val longDateTimeFormatter = DateTimeFormat.forPattern("E, dd MMM yyyy HH:mm:ss 'GMT'").withZoneUTC()
   def parseHeaderDate(dateStr: String): DateTime = longDateTimeFormatter.parseDateTime(dateStr)
   def printHeaderDate(date: DateTime): String = longDateTimeFormatter.print(date)
 

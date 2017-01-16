@@ -1,9 +1,10 @@
 package controllers
 
 import java.io._
+
 import api.ApiError._
 import api.JsonCombinators._
-import models.{ ApiToken, User }
+import models.{ApiToken, User}
 import play.api.mvc._
 
 import scala.concurrent.Future
@@ -15,10 +16,10 @@ import play.api.i18n.MessagesApi
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import play.modules.reactivemongo.ReactiveMongoApi
-import services.UserServices
+import services.{TokenServices, UserServices}
 import reactivemongo.play.json.BSONFormats._
 
-class Account @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: ReactiveMongoApi) extends api.ApiController {
+class Account @Inject() (val messagesApi: MessagesApi,val tokenServices: TokenServices, val reactiveMongoApi: ReactiveMongoApi) extends api.ApiController {
 
   def userService = new UserServices(reactiveMongoApi)
 
@@ -67,7 +68,7 @@ class Account @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: Rea
   }
 
   def delete = SecuredApiAction { implicit request =>
-    ApiToken.delete(request.token).flatMap { _ =>
+    tokenServices.delete(request.token).flatMap { _ =>
       userService.remove(Json.obj("_id" -> request.userId)).flatMap { _ =>
         noContent()
       }

@@ -52,24 +52,5 @@ object ApiToken {
 
   implicit val apiTokenFormat = Json.format[ApiToken]
 
-  def findByTokenAndApiKey(token: String, apiKey: String): Future[Option[ApiToken]] = Future.successful {
-    tokens.find(t => t.token == token && t.apiKey == apiKey)
-  }
 
-  def create(apiKey: String, userId: Option[BSONObjectID]): Future[String] = Future.successful {
-    // Be sure the uuid is not already taken for another token
-
-    def newUUID: String = {
-      val uuid = UUID.randomUUID().toString
-      if (!tokens.exists(_.token == uuid)) uuid else newUUID
-    }
-    val token = newUUID
-
-    tokens.insert(_ => ApiToken(userId, token, apiKey, expirationTime = (new DateTime()) plusMinutes 1000))
-    token
-  }
-
-  def delete(token: String): Future[Unit] = Future.successful {
-    tokens.delete(_.token == token)
-  }
 }

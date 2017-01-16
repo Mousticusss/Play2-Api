@@ -13,12 +13,13 @@ import javax.inject.Inject
 import play.api.i18n.MessagesApi
 import java.util.Date
 
-import play.modules.reactivemongo.{ MongoController, ReactiveMongoApi, ReactiveMongoComponents }
-import reactivemongo.bson.{ BSONDocument, BSONObjectID }
+import play.modules.reactivemongo.{MongoController, ReactiveMongoApi, ReactiveMongoComponents}
+import reactivemongo.bson.{BSONDocument, BSONObjectID}
 import reactivemongo.play.json.collection.JSONCollection
+import services.TokenServices
 
 class Tasks @Inject() (
-    val reactiveMongoApi: ReactiveMongoApi, val messagesApi: MessagesApi
+    val reactiveMongoApi: ReactiveMongoApi, val messagesApi: MessagesApi,val tokenServices: TokenServices
 ) extends api.ApiController with MongoController with ReactiveMongoComponents {
 
   def list(folderId: Long, q: Option[String], done: Option[Boolean], sort: Option[String], p: Int, s: Int) = SecuredApiAction { implicit request =>

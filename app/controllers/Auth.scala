@@ -22,9 +22,9 @@ import models.User
 import org.joda.time.DateTime
 import play.api.Logger
 import reactivemongo.bson._
-import services.UserServices
+import services.{TokenServices, UserServices}
 
-class Auth @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: ReactiveMongoApi, system: ActorSystem, userService: UserServices) extends api.ApiController {
+class Auth @Inject() (val messagesApi: MessagesApi,val tokenServices: TokenServices, val reactiveMongoApi: ReactiveMongoApi, system: ActorSystem, userService: UserServices) extends api.ApiController {
 
   implicit val loginInfoReads: Reads[Tuple2[String, String]] = (
     (__ \ "email").read[String](Reads.email) and
@@ -45,7 +45,7 @@ class Auth @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: Reacti
             if (users.password != pwd) errorUserNotFound
             else if (!users.emailConfirmed) errorUserEmailUnconfirmed
             else if (!users.active) errorUserInactive
-            else ApiToken.create(request.apiKeyOpt.get, users._id).flatMap { token =>
+            else tokenServices.create(request.apiKeyOpt.get, users._id).flatMap { token =>
 
               ok(Json.obj(
                 "token" -> token,
@@ -61,7 +61,7 @@ class Auth @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: Reacti
   }
 
   def signOut = SecuredApiAction { implicit request =>
-    ApiToken.delete(request.token).flatMap { _ =>
+    tokenServices.delete(request.token).flatMap { _ =>
       noContent()
     }
   }
@@ -81,22 +81,6 @@ class Auth @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: Reacti
           case Some(anotherUser) => errorCustom("api.error.signup.email.exists")
 
           case None =>
-            Logger.debug(user.firstName);
-            val a = new User(
-              Some(BSONObjectID.generate),
-              email,
-              password,
-              user.firstName,
-              user.lastName,
-              DateTime.now(),
-              DateTime.now(),
-              true,
-              true,
-              Nil,
-              Nil,
-              None
-            )
-            val d = a.inscriptionDate;
             userService.save(new User(
               Some(BSONObjectID.generate),
               email,

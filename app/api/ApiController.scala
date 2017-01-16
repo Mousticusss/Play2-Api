@@ -2,17 +2,18 @@ package api
 
 import api.ApiError._
 import api.Api.Sorting._
-import models.{ ApiKey, ApiToken }
+import models.{ApiKey, ApiToken}
 import org.joda.time.DateTime
 import play.api.mvc._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import play.api.i18n.{ I18nSupport, MessagesApi }
+import play.api.i18n.{I18nSupport, MessagesApi}
 
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 import play.api.libs.json._
-import play.modules.reactivemongo.{ MongoController, ReactiveMongoComponents }
+import play.modules.reactivemongo.{MongoController, ReactiveMongoComponents}
+import services.TokenServices
 
 /*
 * Controller for the API
@@ -20,7 +21,7 @@ import play.modules.reactivemongo.{ MongoController, ReactiveMongoComponents }
 trait ApiController extends Controller with I18nSupport with MongoController with ReactiveMongoComponents {
 
   val messagesApi: MessagesApi
-
+  val tokenServices: TokenServices
   //////////////////////////////////////////////////////////////////////
   // Implicit transformation utilities
 
@@ -67,10 +68,10 @@ trait ApiController extends Controller with I18nSupport with MongoController wit
   private def SecuredApiActionWithParser[A](parser: BodyParser[A])(action: SecuredApiRequest[A] => Future[ApiResult]) = ApiActionCommon(parser) { (apiRequest, apiKey, date) =>
     apiRequest.tokenOpt match {
       case None => errorTokenNotFound
-      case Some(token) => ApiToken.findByTokenAndApiKey(token, apiKey).flatMap {
+      case Some(token) => tokenServices.findByTokenAndApiKey(token, apiKey).flatMap {
         case None => errorTokenUnknown
         case Some(apiToken) if apiToken.isExpired => {
-          ApiToken.delete(token)
+          tokenServices.delete(token)
           errorTokenExpired
         }
         case Some(apiToken) => action(SecuredApiRequest(apiRequest.request, apiKey, date, token, apiToken.userId))
@@ -85,10 +86,10 @@ trait ApiController extends Controller with I18nSupport with MongoController wit
         case Some(false) => errorApiKeyDisabled
         case Some(true) => action(UserAwareApiRequest(apiRequest.request, apiKey, date, None, None))
       }
-      case Some(token) => ApiToken.findByTokenAndApiKey(token, apiKey).flatMap {
+      case Some(token) => tokenServices.findByTokenAndApiKey(token, apiKey).flatMap {
         case None => errorTokenUnknown
         case Some(apiToken) if apiToken.isExpired => {
-          ApiToken.delete(token)
+          tokenServices.delete(token)
           errorTokenExpired
         }
         case Some(apiToken) => action(UserAwareApiRequest(apiRequest.request, apiKey, date, Some(token), apiToken.userId))

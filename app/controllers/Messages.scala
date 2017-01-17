@@ -6,7 +6,7 @@ package controllers
 
 import api._
 import api.ApiError._
-import models.{Folder, Message, User}
+import models.{ Folder, Message, User }
 import play.api.libs.json._
 import reactivemongo.play.json._
 import collection._
@@ -21,13 +21,13 @@ import play.api.i18n.MessagesApi
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.play.json.collection.JSONCollection
-import reactivemongo.bson.{BSONDocument, BSONDocumentReader, BSONDocumentWriter, Macros, document}
-import services.{MessageServices, TokenServices, UserServices}
+import reactivemongo.bson.{ BSONDocument, BSONDocumentReader, BSONDocumentWriter, Macros, document }
+import services.{ MessageServices, TokenServices, UserServices }
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.{ Failure, Success }
 
-class Messages @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: ReactiveMongoApi, val messageService: MessageServices,val tokenServices: TokenServices, userService: UserServices) extends api.ApiController {
+class Messages @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: ReactiveMongoApi, val messageService: MessageServices, val tokenServices: TokenServices, userService: UserServices) extends api.ApiController {
 
   def delete(id: Long) = SecuredApiAction { implicit request =>
     messageService.remove(Json.obj("_id" -> id)).flatMap { _ =>

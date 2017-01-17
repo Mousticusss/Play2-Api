@@ -8,14 +8,14 @@ import models.ApiToken
 import models.FakeDB._
 import org.joda.time.DateTime
 import play.api.Logger
-import play.api.libs.json.{Format, JsObject, Json}
+import play.api.libs.json.{ Format, JsObject, Json }
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.bson.BSONObjectID
 import reactivemongo.play.json.collection.JSONCollection
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
-
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.{ Failure, Success }
+import javax.inject.Singleton
 /**
  * Created by marcus on 14/01/17.
  */
@@ -35,55 +35,38 @@ class TokenServices @Inject() (reactiveMongoApi: ReactiveMongoApi) extends Mongo
 
   }*/
 
+  def findByTokenAndApiKey(token: String, apiKey: String): Future[Option[ApiToken]] = {
 
-
-  def findByTokenAndApiKey(token: String, apiKey: String): Future[Option[ApiToken]] ={
-
-    find(Json.obj("token" -> token,"apiKey" -> apiKey) )
+    find(Json.obj("token" -> token, "apiKey" -> apiKey))
   }
 
   def create(apiKey: String, userId: Option[BSONObjectID]): Future[String] = {
     // Be sure the uuid is not already taken for another token
 
-    def newUUID:Future[String] = {
+    def newUUID: Future[String] = {
       val uuid = UUID.randomUUID().toString
-      find(Json.obj("token" -> uuid)). flatMap{
+      find(Json.obj("token" -> uuid)).flatMap {
         tok =>
-          if(tok.isEmpty){
-            Future{uuid}
-          }
-          else
+          if (tok.isEmpty) {
+            Future { uuid }
+          } else
             newUUID
       }
 
     }
     val token = newUUID
 
-    token.flatMap{
-      token=>
-        save(ApiToken(userId, token, apiKey, expirationTime = (new DateTime()) plusMinutes 60*24)).map{
-
-
-
-
+    token.flatMap {
+      token =>
+        save(ApiToken(userId, token, apiKey, expirationTime = (new DateTime()) plusMinutes 60 * 24)).map {
 
           case wr if wr.ok => token
 
-          case wr =>  ""
-
-
-
-
+          case wr => ""
 
         }
 
-
-
-
-
     }
-
-
 
   }
 

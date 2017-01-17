@@ -2,17 +2,17 @@ package api
 
 import api.ApiError._
 import api.Api.Sorting._
-import models.{ApiKey, ApiToken}
+import models.{ ApiKey, ApiToken }
 import org.joda.time.DateTime
 import play.api.mvc._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{ I18nSupport, MessagesApi }
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 import play.api.libs.json._
-import play.modules.reactivemongo.{MongoController, ReactiveMongoComponents}
+import play.modules.reactivemongo.{ MongoController, ReactiveMongoComponents }
 import services.TokenServices
 
 /*

@@ -7,7 +7,7 @@ import play.api.i18n.MessagesApi
 import play.modules.reactivemongo.ReactiveMongoApi
 import services.TokenServices
 
-class Application @Inject() (val messagesApi: MessagesApi,val tokenServices: TokenServices, val reactiveMongoApi: ReactiveMongoApi) extends api.ApiController {
+class Application @Inject() (val messagesApi: MessagesApi, val tokenServices: TokenServices, val reactiveMongoApi: ReactiveMongoApi) extends api.ApiController {
 
   def test = ApiAction { implicit request =>
 

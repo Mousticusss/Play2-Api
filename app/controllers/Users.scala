@@ -16,12 +16,12 @@ import play.api.i18n.MessagesApi
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.play.json.collection.JSONCollection
-import reactivemongo.bson.{BSONDocument, BSONDocumentReader, BSONDocumentWriter, Macros, document}
-import services.{TokenServices, UserServices}
+import reactivemongo.bson.{ BSONDocument, BSONDocumentReader, BSONDocumentWriter, Macros, document }
+import services.{ TokenServices, UserServices }
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class Users @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: ReactiveMongoApi,val tokenServices: TokenServices) extends api.ApiController {
+class Users @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: ReactiveMongoApi, val tokenServices: TokenServices) extends api.ApiController {
 
   def userService = new UserServices(reactiveMongoApi)
 

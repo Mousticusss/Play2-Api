@@ -2,7 +2,7 @@ package controllers
 
 import models.Folder
 import play.api.Logger
-import play.api.libs.json.{JsError, JsSuccess}
+import play.api.libs.json.{ JsError, JsSuccess }
 import reactivemongo.api.commands.WriteResult
 import reactivemongo.play.json.collection.JSONCollection
 import services.TokenServices
@@ -25,7 +25,7 @@ import play.modules.reactivemongo.{ MongoController, ReactiveMongoApi, ReactiveM
 import reactivemongo.bson.{ BSONDocument, BSONObjectID }
 import javax.inject.Inject
 
-class Talents @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: ReactiveMongoApi,val tokenServices: TokenServices) extends api.ApiController {
+class Talents @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: ReactiveMongoApi, val tokenServices: TokenServices) extends api.ApiController {
   /*
 
   /*   email: String,

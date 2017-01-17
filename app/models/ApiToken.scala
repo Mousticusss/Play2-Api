@@ -52,5 +52,4 @@ object ApiToken {
 
   implicit val apiTokenFormat = Json.format[ApiToken]
 
-
 }

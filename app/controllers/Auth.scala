@@ -22,9 +22,9 @@ import models.User
 import org.joda.time.DateTime
 import play.api.Logger
 import reactivemongo.bson._
-import services.{TokenServices, UserServices}
+import services.{ TokenServices, UserServices }
 
-class Auth @Inject() (val messagesApi: MessagesApi,val tokenServices: TokenServices, val reactiveMongoApi: ReactiveMongoApi, system: ActorSystem, userService: UserServices) extends api.ApiController {
+class Auth @Inject() (val messagesApi: MessagesApi, val tokenServices: TokenServices, val reactiveMongoApi: ReactiveMongoApi, system: ActorSystem, userService: UserServices) extends api.ApiController {
 
   implicit val loginInfoReads: Reads[Tuple2[String, String]] = (
     (__ \ "email").read[String](Reads.email) and

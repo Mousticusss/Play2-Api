@@ -19,7 +19,7 @@ case class Message(
   recipient: Option[String],
   recipientId: Option[String],
   objectM: Option[String],
-  dateSend: Option[Date],
+  dateSend: Option[DateTime],
   dateRead: Option[DateTime],
   corpus: Option[String]
 )

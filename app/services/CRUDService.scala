@@ -58,25 +58,7 @@ abstract class MongoCRUDService[E: Format](domainFormat: Format[E]) extends CRUD
 
   def save(entity: E)(implicit ec: ExecutionContext): Future[WriteResult] = {
 
-    val doc = Json.toJson(entity).as[JsObject]
-    val dodc = Json.toJson(entity).as[JsObject]
-    /*  val jsson = document(
-      doc
-    )*/
 
-    // Logger.debug(entity.toString())
-    // Logger.debug(Json.obj(doc).toString())
-
-    Logger.debug(Json.toJson(entity).as[JsObject].toString())
-    // collection.flatMap(_.insert(entity))
-    // collection.flatMap(_.insert(doc))
-    // Logger.debug(Json.toJson(doc).toString())
-
-    domainFormat.writes(entity) match {
-      case d @ JsObject(_) => Logger.debug(d.toString())
-      case _ =>
-        Future.failed[WriteResult](new Exception("cannot write object"))
-    }
     domainFormat.writes(entity) match {
       case d @ JsObject(_) => collection.flatMap(_.insert(d))
       case _ =>

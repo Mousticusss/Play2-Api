@@ -37,4 +37,11 @@ class UserServices @Inject() (reactiveMongoApi: ReactiveMongoApi) extends MongoC
 
   }
 
+  def update(selector: JsObject,document:User)(implicit ec: ExecutionContext): Future[WriteResult] ={
+
+      collection.flatMap(_.update(selector, document))
+
+  }
+
+
 }

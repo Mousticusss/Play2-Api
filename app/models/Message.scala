@@ -12,9 +12,10 @@ import reactivemongo.play.json.collection.JSONCollection
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.joda.time.DateTime
+import reactivemongo.bson.BSONObjectID
 
 case class Message(
-
+  idMessage: Option[String],
   sender: Option[String],
   recipient: Option[String],
   recipientId: Option[String],

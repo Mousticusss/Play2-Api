@@ -4,9 +4,11 @@ package controllers
  * Created by marcus on 20/12/16.
  */
 
+import java.util.UUID
+
 import api._
 import api.ApiError._
-import models.{ Folder, Message, User }
+import models.{Folder, Message, User}
 import play.api.libs.json._
 import reactivemongo.play.json._
 import collection._
@@ -21,25 +23,31 @@ import play.api.i18n.MessagesApi
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.play.json.collection.JSONCollection
-import reactivemongo.bson.{ BSONDocument, BSONDocumentReader, BSONDocumentWriter, Macros, document }
-import services.{ MessageServices, TokenServices, UserServices }
+import reactivemongo.bson.{BSONDocument, BSONDocumentReader, BSONDocumentWriter, BSONObjectID, Macros, document}
+import services.{MessageServices, TokenServices, UserServices}
 
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.util.{ Failure, Success }
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 class Messages @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: ReactiveMongoApi, val messageService: MessageServices, val tokenServices: TokenServices, userService: UserServices) extends api.ApiController {
 
-  def delete(id: Long) = SecuredApiAction { implicit request =>
-    messageService.remove(Json.obj("_id" -> id)).flatMap { _ =>
-      noContent()
+  def delete() = SecuredApiActionWithBody { implicit request =>
+
+    readFromRequest[Array[String]]{
+
+    case (messageReceiveId)  =>   messageService.removeMessage( request.userId,messageReceiveId).flatMap {case wr if wr.ok  =>
+      ok("deleted")
+    case wr => errorCustom("api.error.message.delete")
+    }
+    case _=>    errorCustom("api.error.message.delete")
     }
   }
   def postMessage() = SecuredApiActionWithBody { implicit request =>
-    Logger.info(DateTime.now().toString());
 
-    readFromRequest[Message] { message =>
 
-      messageService.postMessage(message, request.userId).flatMap { _ =>
+    readFromRequest[Tuple2[BSONObjectID,Message]] {
+      case(idRec,message) =>
+      messageService.postMessage(Some(idRec),request.userId,message ).flatMap { _ =>
         noContent()
       }
 
@@ -51,38 +59,15 @@ class Messages @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: Re
   }
 
   def getMessage() = SecuredApiAction { implicit request =>
-    /*readFromRequest[Tuple3[String, String, User]] {
-      val  b= userService.find(Json.obj("_id" -> request.userId))
-      b.flatMap(
-      case Some(User) => Future.successful(None)//(*)
-      case None => Future.successful(None);
-      )
-
-
-    }*/ /*readFromRequest[Tuple3[String, String, User]] {
-      val  b= userService.find(Json.obj("_id" -> request.userId))
-      b.flatMap(
-      case Some(User) => Future.successful(None)//(*)
-      case None => Future.successful(None);
-      )
-
-
-    }*/
 
     userService.find(Json.obj("_id" -> request.userId))
-      /*  a onComplete {
-      case Success(user) => if (user.isDefined) {
-        user.get.messageReceive
-      }
-      case Failure(t) => println("An error has occured: " + t.getMessage)
-    }*/
+
       .flatMap(user => {
         if (user.isDefined)
           ok(user.get.messageReceive)
         else
-          ok("erer") //todo Improve
+          errorCustom("api.error.message")//todo Improve
       })
-    //maybeItem(a)
 
   }
 }

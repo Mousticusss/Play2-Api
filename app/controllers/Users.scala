@@ -11,15 +11,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import javax.inject.Inject
 
 import models.FakeDB._
+import org.joda.time.DateTime
 import play.api.Logger
 import play.api.i18n.MessagesApi
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.play.json.collection.JSONCollection
-import reactivemongo.bson.{ BSONDocument, BSONDocumentReader, BSONDocumentWriter, Macros, document }
-import services.{ TokenServices, UserServices }
+import reactivemongo.bson.{BSONDocument, BSONDocumentReader, BSONDocumentWriter, BSONObjectID, Macros, document}
+import services.{TokenServices, UserServices}
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 class Users @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: ReactiveMongoApi, val tokenServices: TokenServices) extends api.ApiController {
 
@@ -33,44 +34,44 @@ class Users @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: React
       noContent()
     }
   }
-  /*  def findById(implicit reactiveMongoApi: ReactiveMongoApi ,id: Long): Future[List[User]] =  collection.flatMap(_.find(document("_id" ->id)). // query builder
-      cursor[User]().collect[List]()) // collect using the result cursor
-    // ... deserializes the document using personRead
-*/
 
-  /*  def findByEmail(email: String): Future[Option[User]] = Future.successful {
-    users.find(_.email == email)
+
+  def update = SecuredApiActionWithBody { implicit request =>
+
+    readFromRequest[User] {
+
+      case (user) =>
+        userService.update(Json.obj("_id" -> request.userId),Json.obj("user" -> request.userId)).flatMap {
+          case wr if wr.ok =>            ok("user update")
+
+          case wr => errorCustom(wr.writeErrors.toString())
+
+        }
+      case _ =>
+
+        errorCustom("api.error.no.user") // nothing special, delegate to our original showNotification function
+
+
+    }
+  }
+  /*def remove = SecuredApiAction { implicit request =>
+
+
+
+      case (user) =>
+        userService.update(Json.obj("_id" -> request.userId),Json.obj("user" -> request.userId)).flatMap {
+          case wr if wr.ok =>            ok("user update")
+
+          case wr => errorCustom(wr.writeErrors.toString())
+
+        }
+      case _ =>
+
+        errorCustom("api.error.no.user") // nothing special, delegate to our original showNotification function
+
+
+
   }*/
 
-  // def findByEmail(email: String):Future[Option[User]] =  collection.flatMap(_.find(document("_id" ->email)).one[User]().collect[List]())
-  //def collection: BSONCollection
-  def findByEmail(email: String)(implicit jsonReads: Reads[User]): Future[Option[User]] = collection.flatMap(_.find(document(
-
-    "email" -> email
-
-  )).one[User])
-
-  /* def insert2(email: String, password: String, name: String): Future[(Long, User)] = Future.successful {
-    users.insert(User(_, email, password, name, emailConfirmed = false, active = false))
-  }
-
-  def insert(email: String, password: String, name: String): Future[Either[String, User]] = {
-
-    val jUser = User(
-      1,
-      email,
-      password,
-      name,
-      true,
-      false
-    )
-
-    collection.flatMap(_.insert(jUser).map {
-      case wr if wr.ok => Right(jUser)
-      case wr => Left(wr.writeErrors.toString())
-    })
-
-  }
-*/
 }
 

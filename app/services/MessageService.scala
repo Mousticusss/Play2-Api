@@ -3,8 +3,8 @@ package services
 import java.util.UUID
 import javax.inject.Inject
 
-import models.{Message, User}
-import play.api.libs.json.{Format, JsObject, Json}
+import models.{ Message, User }
+import play.api.libs.json.{ Format, JsObject, Json }
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.commands.UpdateWriteResult
 import reactivemongo.bson.BSONObjectID
@@ -12,7 +12,7 @@ import reactivemongo.play.json.collection.JSONCollection
 import reactivemongo.play.json._
 import reactivemongo.play.json.collection.JSONCollection
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 /**
  * Created by marcus on 20/12/16.
@@ -26,10 +26,7 @@ class MessageServices @Inject() (reactiveMongoApi: ReactiveMongoApi) extends Mon
 
   def collection(implicit ec: ExecutionContext) = reactiveMongoApi.database.map(_.collection[JSONCollection]("user"))
 
-  def postMessage(idR:Option[BSONObjectID],id: Option[BSONObjectID],message: Message )(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
-
-
-
+  def postMessage(idR: Option[BSONObjectID], id: Option[BSONObjectID], message: Message)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
 
     //Todo so much work for almost nothing maybe create the uuid in the write json
     val mS = message.copy(idMessage = Some(UUID.randomUUID().toString))
@@ -45,21 +42,18 @@ class MessageServices @Inject() (reactiveMongoApi: ReactiveMongoApi) extends Mon
       )
     )
 
-
     collection.flatMap(_.update(Json.obj("_id" -> id), newMessageSender))
     collection.flatMap(_.update(Json.obj("_id" -> idR), newMessageRecipient))
 
   }
 
-
-   def getMessage(id: Option[BSONObjectID])(implicit ec: ExecutionContext): Future[Option[User]] = {
+  def getMessage(id: Option[BSONObjectID])(implicit ec: ExecutionContext): Future[Option[User]] = {
 
     collection.flatMap(_.find(Json.obj("_id" -> id)).one[User])
 
   }
 
-  def removeMessage(userID:Option[BSONObjectID],messageId:Array[String]) ={
-
+  def removeMessage(userID: Option[BSONObjectID], messageId: Array[String])(implicit ec: ExecutionContext) = {
 
     /*
     update({"_id":ObjectId("585a9b466300008004cc5906")},{"$pull":{"messageSend":{"idMessage"
@@ -69,15 +63,15 @@ class MessageServices @Inject() (reactiveMongoApi: ReactiveMongoApi) extends Mon
     }}})*/
 
     val selector = Json.obj(
-      "$_id" -> userID    )
+      "$_id" -> userID
+    )
     val pull = Json.obj(
       "$$pull" -> Json.obj(
-        "messageReceive" -> Json.obj("idMessage" -> Json.obj( "$in"-> messageId) )
+        "messageReceive" -> Json.obj("idMessage" -> Json.obj("$in" -> messageId))
       )
     )
 
-    collection.flatMap(_.update(selector,pull))
-
+    collection.flatMap(_.update(selector, pull))
 
   }
 }

@@ -16,7 +16,8 @@ POST		/signout						controllers.Auth.signOut
 POST		/signup							controllers.Auth.signUp
 
 # USERNAMES
-GET			/usernames					controllers.Users.usernames
+GET			/users				controllers.Users.getUsers()
+GET			/user			controllers.Users.getUserById(userId: String)
 
 # ACCOUNT
 GET			/account						controllers.Account.info

@@ -19,8 +19,8 @@ case class Talent(
   photo: Seq[Byte],
   skill: Seq[String],
   notation: Seq[String],
-  job:  Seq[Job],
-  disponibility:  Option[Disponibility]
+  job: Seq[Job],
+  disponibility: Option[Disponibility]
 )
 
 object Talent {

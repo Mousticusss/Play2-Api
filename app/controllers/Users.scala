@@ -17,10 +17,10 @@ import play.api.i18n.MessagesApi
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.play.json.collection.JSONCollection
-import reactivemongo.bson.{BSONDocument, BSONDocumentReader, BSONDocumentWriter, BSONObjectID, Macros, document}
-import services.{TokenServices, UserServices}
+import reactivemongo.bson.{ BSONDocument, BSONDocumentReader, BSONDocumentWriter, BSONObjectID, Macros, document }
+import services.{ TokenServices, UserServices }
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 class Users @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: ReactiveMongoApi, val tokenServices: TokenServices) extends api.ApiController {
 
@@ -35,14 +35,36 @@ class Users @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: React
     }
   }
 
+  def getUsers() = SecuredApiAction { implicit request =>
 
+    //TODO Refactor to use arrayString param
+
+    userService.findAll(Json.obj()).flatMap {
+      case listUser => ok(listUser)
+
+      case _ => errorCustom("No data")
+
+    }
+  }
+
+  def getUserById(userId: String) = SecuredApiAction { implicit request =>
+
+    Console.err.println(userId)
+    userService.find(Json.obj("_id" -> BSONObjectID.parse(userId).get)).flatMap {
+      case Some(users) => ok(users)
+
+      case _ => errorCustom("no user Find")
+
+    }
+
+  }
   def update = SecuredApiActionWithBody { implicit request =>
 
     readFromRequest[User] {
 
       case (user) =>
-        userService.update(Json.obj("_id" -> request.userId),Json.obj("user" -> request.userId)).flatMap {
-          case wr if wr.ok =>            ok("user update")
+        userService.update(Json.obj("_id" -> request.userId), Json.obj("user" -> request.userId)).flatMap {
+          case wr if wr.ok => ok("user update")
 
           case wr => errorCustom(wr.writeErrors.toString())
 
@@ -50,8 +72,6 @@ class Users @Inject() (val messagesApi: MessagesApi, val reactiveMongoApi: React
       case _ =>
 
         errorCustom("api.error.no.user") // nothing special, delegate to our original showNotification function
-
-
     }
   }
   /*def remove = SecuredApiAction { implicit request =>

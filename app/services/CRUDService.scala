@@ -4,7 +4,8 @@ import api.ApiError._
 import models.{ Identity, User }
 import play.api.Logger
 import play.api.libs.json.{ JsObject, Reads, Writes }
-import reactivemongo.api.{ Cursor, ReadPreference }
+import reactivemongo.api.{ ReadPreference }
+
 import reactivemongo.api.commands.WriteResult
 import reactivemongo.bson._
 import reactivemongo.play.json.collection.JSONCollection
@@ -49,7 +50,8 @@ abstract class MongoCRUDService[E: Format](domainFormat: Format[E]) extends CRUD
 
   }
   def findAll(selector: JsObject)(implicit ec: ExecutionContext): Future[List[JsObject]] =
-    collection.flatMap(_.find(Json.obj()).cursor[JsObject]().collect[List]())
+    // collection.flatMap(_.find(Json.obj()).cursor[JsObject]().collect[List]())
+    collection.flatMap(_.find(Json.obj()).cursor[JsObject](ReadPreference.Primary).collect[List]())
   //collection.find(Json.obj()).cursor[JsObject](ReadPreference.Primary).collect[List]()
 
   def update(selector: JsObject, update: JsObject)(implicit ec: ExecutionContext): Future[WriteResult] = collection.flatMap(_.update(selector, update.as[JsObject]))
@@ -57,7 +59,6 @@ abstract class MongoCRUDService[E: Format](domainFormat: Format[E]) extends CRUD
   def remove(doc: JsObject)(implicit ec: ExecutionContext): Future[WriteResult] = collection.flatMap(_.remove(doc, firstMatchOnly = true))
 
   def save(entity: E)(implicit ec: ExecutionContext): Future[WriteResult] = {
-
 
     domainFormat.writes(entity) match {
       case d @ JsObject(_) => collection.flatMap(_.insert(d))
